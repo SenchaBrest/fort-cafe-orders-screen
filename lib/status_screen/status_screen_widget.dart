@@ -39,10 +39,8 @@ class _StatusScreenWidgetState extends State<StatusScreenWidget> {
       await actions.subscribe(
         'orders',
         () async {
-          safeSetState(() => _model.apiRequestCompleter1 = null);
-          await _model.waitForApiRequestCompleted1();
-          safeSetState(() => _model.apiRequestCompleter2 = null);
-          await _model.waitForApiRequestCompleted2();
+          safeSetState(() => _model.apiRequestCompleter = null);
+          await _model.waitForApiRequestCompleted();
         },
       );
     });
@@ -108,7 +106,7 @@ class _StatusScreenWidgetState extends State<StatusScreenWidget> {
                           color: FlutterFlowTheme.of(context).primaryText,
                         ),
                         child: FutureBuilder<ApiCallResponse>(
-                          future: (_model.apiRequestCompleter1 ??= Completer<
+                          future: (_model.apiRequestCompleter ??= Completer<
                                   ApiCallResponse>()
                                 ..complete(
                                     GetOrdersInProgreeAndPendingCall.call()))
@@ -215,10 +213,7 @@ class _StatusScreenWidgetState extends State<StatusScreenWidget> {
                           color: FlutterFlowTheme.of(context).primaryText,
                         ),
                         child: FutureBuilder<ApiCallResponse>(
-                          future: (_model.apiRequestCompleter2 ??=
-                                  Completer<ApiCallResponse>()
-                                    ..complete(GetCompletedOrdersCall.call()))
-                              .future,
+                          future: GetCompletedOrdersCall.call(),
                           builder: (context, snapshot) {
                             // Customize what your widget looks like when it's loading.
                             if (!snapshot.hasData) {
@@ -233,49 +228,45 @@ class _StatusScreenWidgetState extends State<StatusScreenWidget> {
                                 ),
                               );
                             }
-                            final columnGetCompletedOrdersResponse =
+                            final wrapGetCompletedOrdersResponse =
                                 snapshot.data!;
 
                             return Builder(
                               builder: (context) {
                                 final orders = getJsonField(
-                                  columnGetCompletedOrdersResponse.jsonBody,
+                                  wrapGetCompletedOrdersResponse.jsonBody,
                                   r'''$''',
                                 ).toList();
 
-                                return Column(
-                                  mainAxisSize: MainAxisSize.max,
+                                return Wrap(
+                                  spacing: 0.0,
+                                  runSpacing:
+                                      MediaQuery.sizeOf(context).width * 0.08,
+                                  alignment: WrapAlignment.start,
+                                  crossAxisAlignment: WrapCrossAlignment.start,
+                                  direction: Axis.vertical,
+                                  runAlignment: WrapAlignment.start,
+                                  verticalDirection: VerticalDirection.down,
+                                  clipBehavior: Clip.none,
                                   children: List.generate(orders.length,
                                       (ordersIndex) {
                                     final ordersItem = orders[ordersIndex];
-                                    return Align(
-                                      alignment:
-                                          AlignmentDirectional(-1.0, -1.0),
-                                      child: AutoSizeText(
-                                        '${getJsonField(
-                                          ordersItem,
-                                          r'''$.number''',
-                                        ).toString()} - ${getJsonField(
-                                          ordersItem,
-                                          r'''$.name''',
-                                        ).toString()} ${getJsonField(
-                                          ordersItem,
-                                          r'''$.surname''',
-                                        ).toString()}',
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily: 'Inter',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondary,
-                                              fontSize:
-                                                  MediaQuery.sizeOf(context)
-                                                          .height *
-                                                      0.07,
-                                              letterSpacing: 0.0,
-                                            ),
-                                      ),
+                                    return AutoSizeText(
+                                      getJsonField(
+                                        ordersItem,
+                                        r'''$.number''',
+                                      ).toString(),
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily: 'Inter',
+                                            color: FlutterFlowTheme.of(context)
+                                                .secondary,
+                                            fontSize: MediaQuery.sizeOf(context)
+                                                    .height *
+                                                0.1,
+                                            letterSpacing: 0.0,
+                                          ),
                                     );
                                   }),
                                 );
