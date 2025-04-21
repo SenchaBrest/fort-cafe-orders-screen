@@ -108,9 +108,10 @@ class _StatusScreenWidgetState extends State<StatusScreenWidget> {
                           color: FlutterFlowTheme.of(context).primaryText,
                         ),
                         child: FutureBuilder<ApiCallResponse>(
-                          future: (_model.apiRequestCompleter1 ??=
-                                  Completer<ApiCallResponse>()
-                                    ..complete(GetCompletedOrdersCall.call()))
+                          future: (_model.apiRequestCompleter1 ??= Completer<
+                                  ApiCallResponse>()
+                                ..complete(
+                                    GetOrdersInProgreeAndPendingCall.call()))
                               .future,
                           builder: (context, snapshot) {
                             // Customize what your widget looks like when it's loading.
@@ -126,13 +127,14 @@ class _StatusScreenWidgetState extends State<StatusScreenWidget> {
                                 ),
                               );
                             }
-                            final wrapGetCompletedOrdersResponse =
+                            final wrapGetOrdersInProgreeAndPendingResponse =
                                 snapshot.data!;
 
                             return Builder(
                               builder: (context) {
                                 final orders = getJsonField(
-                                  wrapGetCompletedOrdersResponse.jsonBody,
+                                  wrapGetOrdersInProgreeAndPendingResponse
+                                      .jsonBody,
                                   r'''$''',
                                 ).toList();
 
