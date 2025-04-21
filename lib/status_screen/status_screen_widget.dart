@@ -108,10 +108,9 @@ class _StatusScreenWidgetState extends State<StatusScreenWidget> {
                           color: FlutterFlowTheme.of(context).primaryText,
                         ),
                         child: FutureBuilder<ApiCallResponse>(
-                          future: (_model.apiRequestCompleter1 ??= Completer<
-                                  ApiCallResponse>()
-                                ..complete(
-                                    GetOrdersInProgreeAndPendingCall.call()))
+                          future: (_model.apiRequestCompleter1 ??=
+                                  Completer<ApiCallResponse>()
+                                    ..complete(GetCompletedOrdersCall.call()))
                               .future,
                           builder: (context, snapshot) {
                             // Customize what your widget looks like when it's loading.
@@ -127,50 +126,45 @@ class _StatusScreenWidgetState extends State<StatusScreenWidget> {
                                 ),
                               );
                             }
-                            final columnGetOrdersInProgreeAndPendingResponse =
+                            final wrapGetCompletedOrdersResponse =
                                 snapshot.data!;
 
                             return Builder(
                               builder: (context) {
                                 final orders = getJsonField(
-                                  columnGetOrdersInProgreeAndPendingResponse
-                                      .jsonBody,
+                                  wrapGetCompletedOrdersResponse.jsonBody,
                                   r'''$''',
                                 ).toList();
 
-                                return Column(
-                                  mainAxisSize: MainAxisSize.max,
+                                return Wrap(
+                                  spacing: 0.0,
+                                  runSpacing:
+                                      MediaQuery.sizeOf(context).width * 0.08,
+                                  alignment: WrapAlignment.start,
+                                  crossAxisAlignment: WrapCrossAlignment.start,
+                                  direction: Axis.vertical,
+                                  runAlignment: WrapAlignment.start,
+                                  verticalDirection: VerticalDirection.down,
+                                  clipBehavior: Clip.none,
                                   children: List.generate(orders.length,
                                       (ordersIndex) {
                                     final ordersItem = orders[ordersIndex];
-                                    return Align(
-                                      alignment:
-                                          AlignmentDirectional(-1.0, -1.0),
-                                      child: AutoSizeText(
-                                        '${getJsonField(
-                                          ordersItem,
-                                          r'''$.number''',
-                                        ).toString()} - ${getJsonField(
-                                          ordersItem,
-                                          r'''$.name''',
-                                        ).toString()} ${getJsonField(
-                                          ordersItem,
-                                          r'''$.surname''',
-                                        ).toString()}',
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily: 'Inter',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .tertiary,
-                                              fontSize:
-                                                  MediaQuery.sizeOf(context)
-                                                          .height *
-                                                      0.07,
-                                              letterSpacing: 0.0,
-                                            ),
-                                      ),
+                                    return AutoSizeText(
+                                      getJsonField(
+                                        ordersItem,
+                                        r'''$.number''',
+                                      ).toString(),
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily: 'Inter',
+                                            color: FlutterFlowTheme.of(context)
+                                                .tertiary,
+                                            fontSize: MediaQuery.sizeOf(context)
+                                                    .height *
+                                                0.07,
+                                            letterSpacing: 0.0,
+                                          ),
                                     );
                                   }),
                                 );
